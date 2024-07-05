@@ -1,25 +1,31 @@
-import queue
-from typing import Dict, Callable
 from data_provider.data_provider import DataProvider
-from events.events import DataEvent
+from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
+
+from events.events import DataEvent, SignalEvent
+
+from typing import Dict, Callable
+import queue
 import time
+from datetime import datetime
 
 
 class TradingDirector():
 
-    def __init__(self,events_queue: queue.Queue, data_provider: DataProvider):
+    def __init__(self,events_queue: queue.Queue, data_provider: DataProvider, signal_generator: ISignalGenerator):
 
         self.events_queue = events_queue
 
         # References to modules
         self.DATA_PRIVIDER = data_provider
+        self.SIGNAL_GENERATOR = signal_generator
 
         # Trading Controler
         self.continue_trading: bool = True
 
         # Event handler
         self.event_handler: Dict[str, Callable] = {
-            "DATA" : self._handle_data_event,
+            "DATA": self._handle_data_event,
+            "SIGNAL": self._handle_signal_event,
         }
 
     def run(self) -> None:
@@ -43,4 +49,12 @@ class TradingDirector():
 
     def _handle_data_event(self, event: DataEvent):
         # Manage DataEvent type events
-        print(f"{event.data.name} - Receibed new data from {event.symbol} - Last close prize: {event.data.close}")
+        print(f"{self._dateprint()} - Receibed new DATA EVENT from {event.symbol} - Last close prize: {event.data.close}")
+        self.SIGNAL_GENERATOR.generate_signal(event)
+
+    def _dateprint(self) -> str:
+        return datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")[:-3]
+
+    def _handle_signal_event(self,event: SignalEvent):
+        #Signal event processing
+        print(f"{self._dateprint()} - SIGNAL EVENT receibed {event.signal} for {event.symbol}")

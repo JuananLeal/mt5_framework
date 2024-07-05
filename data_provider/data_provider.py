@@ -19,6 +19,7 @@ class DataProvider():
         self.last_bar_datetime: Dict[str, datetime] = {symbol: datetime.min for symbol in self.symbols}
 
     def _map_timeframes(self, timeframe:str) -> int:
+        
         timeframe_mapping = {
             '1m'  : mt5.TIMEFRAME_M1,
             '2m'  : mt5.TIMEFRAME_M2,
