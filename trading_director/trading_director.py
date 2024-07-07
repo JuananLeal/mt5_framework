@@ -1,7 +1,8 @@
 from data_provider.data_provider import DataProvider
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
+from position_sizer.position_sizer import PositionSizer
 
-from events.events import DataEvent, SignalEvent
+from events.events import DataEvent, SignalEvent, SizingEvent
 
 from typing import Dict, Callable
 import queue
@@ -11,13 +12,14 @@ from datetime import datetime
 
 class TradingDirector():
 
-    def __init__(self,events_queue: queue.Queue, data_provider: DataProvider, signal_generator: ISignalGenerator):
+    def __init__(self,events_queue: queue.Queue, data_provider: DataProvider, signal_generator: ISignalGenerator, position_sizer: PositionSizer):
 
         self.events_queue = events_queue
 
         # References to modules
         self.DATA_PRIVIDER = data_provider
         self.SIGNAL_GENERATOR = signal_generator
+        self.POSITION_SIZER = position_sizer
 
         # Trading Controler
         self.continue_trading: bool = True
@@ -26,6 +28,7 @@ class TradingDirector():
         self.event_handler: Dict[str, Callable] = {
             "DATA": self._handle_data_event,
             "SIGNAL": self._handle_signal_event,
+            "SIZING": self._handle_sizing_event,
         }
 
     def run(self) -> None:
@@ -58,3 +61,7 @@ class TradingDirector():
     def _handle_signal_event(self,event: SignalEvent):
         #Signal event processing
         print(f"{self._dateprint()} - SIGNAL EVENT receibed {event.signal} for {event.symbol}")
+        self.POSITION_SIZER.size_signal(event)
+
+    def _handle_sizing_event(self, event: SizingEvent):
+        print(f"{self._dateprint()} - SIZING EVENT receibed {event.signal} with volume {event.volume} for {event.symbol}")
