@@ -1,8 +1,9 @@
 from data_provider.data_provider import DataProvider
 from signal_generator.interfaces.signal_generator_interface import ISignalGenerator
 from position_sizer.position_sizer import PositionSizer
+from risk_manager.risk_manager import RiskManager
 
-from events.events import DataEvent, SignalEvent, SizingEvent
+from events.events import DataEvent, SignalEvent, SizingEvent, OrderEvent
 
 from typing import Dict, Callable
 import queue
@@ -12,7 +13,12 @@ from datetime import datetime
 
 class TradingDirector():
 
-    def __init__(self,events_queue: queue.Queue, data_provider: DataProvider, signal_generator: ISignalGenerator, position_sizer: PositionSizer):
+    def __init__(self,
+                 events_queue: queue.Queue,
+                 data_provider: DataProvider, 
+                 signal_generator: ISignalGenerator, 
+                 position_sizer: PositionSizer, 
+                 risk_manager: RiskManager):
 
         self.events_queue = events_queue
 
@@ -20,6 +26,7 @@ class TradingDirector():
         self.DATA_PRIVIDER = data_provider
         self.SIGNAL_GENERATOR = signal_generator
         self.POSITION_SIZER = position_sizer
+        self.RISK_MANAGER = risk_manager
 
         # Trading Controler
         self.continue_trading: bool = True
@@ -29,6 +36,7 @@ class TradingDirector():
             "DATA": self._handle_data_event,
             "SIGNAL": self._handle_signal_event,
             "SIZING": self._handle_sizing_event,
+            "ORDER": self._handle_order_event
         }
 
     def run(self) -> None:
@@ -52,7 +60,7 @@ class TradingDirector():
 
     def _handle_data_event(self, event: DataEvent):
         # Manage DataEvent type events
-        print(f"{self._dateprint()} - Receibed new DATA EVENT from {event.symbol} - Last close prize: {event.data.close}")
+        print(f"{self._dateprint()} - Received new DATA EVENT from {event.symbol} - Last close prize: {event.data.close}")
         self.SIGNAL_GENERATOR.generate_signal(event)
 
     def _dateprint(self) -> str:
@@ -60,8 +68,14 @@ class TradingDirector():
 
     def _handle_signal_event(self,event: SignalEvent):
         #Signal event processing
-        print(f"{self._dateprint()} - SIGNAL EVENT receibed {event.signal} for {event.symbol}")
+        print(f"{self._dateprint()} - SIGNAL EVENT received {event.signal} for {event.symbol}")
         self.POSITION_SIZER.size_signal(event)
 
     def _handle_sizing_event(self, event: SizingEvent):
-        print(f"{self._dateprint()} - SIZING EVENT receibed {event.signal} with volume {event.volume} for {event.symbol}")
+        print(f"{self._dateprint()} - SIZING EVENT received {event.signal} with volume {event.volume} for {event.symbol}")
+        self.RISK_MANAGER.asses_order(event)
+
+    def _handle_order_event(self, event: OrderEvent):
+        print(f"{self._dateprint()} - ORDER EVENT received {event.signal} with volume {event.volume} for {event.symbol}")
+
+        
