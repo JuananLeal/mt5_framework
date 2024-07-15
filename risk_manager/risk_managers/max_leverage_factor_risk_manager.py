@@ -22,7 +22,7 @@ class MaxLeverageFactorRiskManager(IRiskManager):
     def _check_expected_new_position_is_compliant_with_max_leverage_factor(self, 
                                                                            sizing_event: SizingEvent,
                                                                            current_positions_value_account_currency: float,
-                                                                           new_position_value_account_currency: float):
+                                                                           new_position_value_account_currency: float) -> bool:
         # Calc new expected account value if we execute the new order
         new_account_value = current_positions_value_account_currency + new_position_value_account_currency
 
@@ -33,7 +33,7 @@ class MaxLeverageFactorRiskManager(IRiskManager):
         if abs(new_leverage_factor) <= self.max_leverage_factor:
             return True
         else:
-            print(f"RISK MANAGEMENT: New position {sizing_event.volume} with a leverage factor of {abs(new_leverage_factor)}, is greater than {self.max_leverage_factor}")
+            print(f"RISK MANAGEMENT: New position with volume {sizing_event.volume} with a leverage factor of {abs(new_leverage_factor)}, is greater than {self.max_leverage_factor}")
             return False
 
     def assess_order(self, sizing_event: SizingEvent, current_positions_value_account_currency: float, new_position_value_account_currency: float) -> float:

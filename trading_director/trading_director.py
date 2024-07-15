@@ -73,7 +73,7 @@ class TradingDirector():
 
     def _handle_sizing_event(self, event: SizingEvent):
         print(f"{self._dateprint()} - SIZING EVENT received {event.signal} with volume {event.volume} for {event.symbol}")
-        self.RISK_MANAGER.asses_order(event)
+        self.RISK_MANAGER.assess_order(event)
 
     def _handle_order_event(self, event: OrderEvent):
         print(f"{self._dateprint()} - ORDER EVENT received {event.signal} with volume {event.volume} for {event.symbol}")

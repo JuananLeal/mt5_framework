@@ -17,7 +17,7 @@ from queue import Queue
 if __name__ == "__main__":
 
     #Defining variables needed to trade
-    symbols = ['EURUSD', 'USDJPY']#, 'EURGBP', 'XAUUSD']
+    symbols = ['EURJPY']#,'EURUSD', 'EURGBP', 'XAUUSD']
     timeframe = '1m'
     magic_number = 12345
     slow_ma_period = 50
@@ -42,12 +42,12 @@ if __name__ == "__main__":
     
     POSITION_SIZER = PositionSizer(events_queue=events_queue,
                                    data_provider=DATA_PROVIDER,
-                                   sizing_properties=FixedSizingProps(volume=0.9))
+                                   sizing_properties=FixedSizingProps(volume=1))
     
     RISK_MANAGER = RiskManager(events_queue=events_queue,
                                data_provider=DATA_PROVIDER,
                                portfolio=PORTFOLIO,
-                               risk_properties=MaxLeverageFactorRiskProps(max_leverage_factor=5.0))
+                               risk_properties=MaxLeverageFactorRiskProps(max_leverage_factor=0.0001))
 
     # Trading Director creation and main method execution
     TRADING_DIRECTOR = TradingDirector(events_queue=events_queue,

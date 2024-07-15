@@ -9,7 +9,6 @@ class Portfolio():
         return mt5.positions_get()
     
     def get_strategy_open_positions(self) -> tuple:
-
         positions = []
         for position in mt5.positions_get():
             if position.magic == self.magic:

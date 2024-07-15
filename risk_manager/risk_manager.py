@@ -1,6 +1,5 @@
-from events.events import SizingEvent
 from .interfaces.risk_manager_interface import IRiskManager
-from .properties.risk_maganer_properties import BaseRiskProps
+from .properties.risk_maganer_properties import BaseRiskProps, MaxLeverageFactorRiskProps
 from .risk_managers.max_leverage_factor_risk_manager import MaxLeverageFactorRiskManager
 from data_provider.data_provider import DataProvider
 from portfolio.portfolio import Portfolio
@@ -15,13 +14,13 @@ class RiskManager(IRiskManager):
     def __init__(self, events_queue: Queue, data_provider: DataProvider, portfolio: Portfolio, risk_properties: BaseRiskProps):
         self.events_queue = events_queue
         self.DATA_PROVIDER = data_provider
-        self.PORTFOLIO = Portfolio
+        self.PORTFOLIO = portfolio
 
         self.risk_management_method = self._get_risk_management_method(risk_properties)
 
     def _get_risk_management_method(self, risk_props: BaseRiskProps) -> IRiskManager:
 
-        if isinstance(risk_props, MaxLeverageFactorRiskManager):
+        if isinstance(risk_props, MaxLeverageFactorRiskProps):
             return MaxLeverageFactorRiskManager(risk_props)
         else:
             raise Exception(f"ERROR: Unknown risk manager: {risk_props}")
@@ -40,7 +39,7 @@ class RiskManager(IRiskManager):
         symbol_info = mt5.symbol_info(symbol)
 
         # Traded units in symbol currency
-        traded_units = volume * mt5.symbol_info.trade_contract_size
+        traded_units = volume * symbol_info.trade_contract_size
 
         # Value from traded units in symbol currency
         value_traded_in_profit_currency = traded_units * self.DATA_PROVIDER.get_latest_tick(symbol)['bid']
