@@ -23,7 +23,7 @@ class Utils():
         to_currency = to_currency.upper()
 
         # Search currencies symbol
-        fx_symbol = [symbol for symbol in all_fx_symbol if from_currency and to_currency in symbol][0]
+        fx_symbol = [symbol for symbol in all_fx_symbol if from_currency in symbol and to_currency in symbol][0]
         fx_symbol_base = fx_symbol[:3]
 
         # Get latest data available for fx_symbol

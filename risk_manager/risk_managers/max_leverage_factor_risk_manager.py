@@ -33,7 +33,7 @@ class MaxLeverageFactorRiskManager(IRiskManager):
         if abs(new_leverage_factor) <= self.max_leverage_factor:
             return True
         else:
-            print(f"RISK MANAGEMENT: New position with volume {sizing_event.volume} with a leverage factor of {abs(new_leverage_factor)}, is greater than {self.max_leverage_factor}")
+            print(f"RISK MANAGEMENT: New position with volume {sizing_event.volume} with a leverage factor of {abs(new_leverage_factor):.2f}, is greater than {self.max_leverage_factor}")
             return False
 
     def assess_order(self, sizing_event: SizingEvent, current_positions_value_account_currency: float, new_position_value_account_currency: float) -> float:
