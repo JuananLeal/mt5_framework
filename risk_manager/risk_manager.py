@@ -32,7 +32,7 @@ class RiskManager(IRiskManager):
         #Calc our open positions value
         total_value = 0.0
         for position in current_positions:
-            total_value += self._compute_value_of_position_in_account_currency()
+            total_value += self._compute_value_of_position_in_account_currency(position.symbol,position.volume,position.type)
         return total_value
     
     def _compute_value_of_position_in_account_currency(self, symbol: str, volume: float, position_type: int) -> float:

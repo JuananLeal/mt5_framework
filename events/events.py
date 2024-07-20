@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 import pandas as pd
+from datetime import datetime
 
 # Define differente event types
 
@@ -9,6 +10,8 @@ class EventType(str, Enum):
     SIGNAL = "SIGNAL"
     SIZING = "SIZING"
     ORDER = "ORDER"
+    EXECUTION = "EXECUTION"
+    PENDING = "PENDING"
 
 class SignalType(str, Enum):
     BUY = "BUY"
@@ -62,3 +65,21 @@ class OrderEvent(BaseEvent):
     tp: float
     volume: float
 
+class ExecutionEvent(BaseEvent):
+    event_type: EventType = EventType.EXECUTION
+    symbol: str
+    signal: SignalType
+    fill_price: float
+    fill_time: datetime
+    volume : float
+
+class PlacedPendingOrderEvent(BaseEvent):
+    event_type: EventType = EventType.PENDING
+    symbol: str
+    signal: SignalType 
+    target_order: OrderType
+    target_price: float
+    magic_number: int
+    sl : float
+    tp: float
+    volume: float

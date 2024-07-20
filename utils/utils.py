@@ -1,4 +1,6 @@
 import MetaTrader5 as mt5
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # Create static method to convert currencies
 
@@ -43,3 +45,7 @@ class Utils():
             # Convert from currency into our account currency
             converted_amount = amount / last_price if fx_symbol_base == to_currency else amount * last_price
             return converted_amount
+
+    @staticmethod
+    def _dateprint(self) -> str:
+        return datetime.now(ZoneInfo("Asia/Nicosia")).strftime("%d/%m/%Y %H:%M:%S.%f")[:-3]
